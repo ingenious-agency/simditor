@@ -14,7 +14,7 @@
   }
 }(this, function ($, SimpleModule, simpleHotkeys, simpleUploader, DOMPurify) {
 
-var AlignmentButton, BlockquoteButton, BoldButton, Button, Clipboard, CodeButton, CodePopover, ColorButton, FontScaleButton, Formatter, HrButton, ImageButton, ImagePopover, IndentButton, Indentation, InputManager, ItalicButton, Keystroke, LinkButton, LinkPopover, ListButton, OrderListButton, OutdentButton, Popover, Selection, Simditor, StrikethroughButton, TableButton, TitleButton, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util,
+var AlignmentButton, BlockquoteButton, BoldButton, Button, CheckboxButton, CheckboxPopover, Clipboard, CodeButton, CodePopover, ColorButton, FontScaleButton, Formatter, HrButton, ImageButton, ImagePopover, IndentButton, Indentation, InputButton, InputManager, InputPopover, ItalicButton, Keystroke, LinkButton, LinkPopover, ListButton, OrderListButton, OutdentButton, Popover, RadioButton, RadioPopover, SelectButton, SelectPopover, Selection, Simditor, StrikethroughButton, TableButton, TextareaButton, TextareaPopover, TitleButton, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
@@ -476,12 +476,16 @@ Formatter = (function(superClass) {
 
   Formatter.prototype._init = function() {
     this.editor = this._module;
-    this._allowedTags = $.merge(['br', 'span', 'a', 'img', 'b', 'strong', 'i', 'strike', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'h1', 'h2', 'h3', 'h4', 'hr'], this.opts.allowedTags);
+    this._allowedTags = $.merge(['br', 'span', 'a', 'img', 'b', 'strong', 'i', 'strike', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'h1', 'h2', 'h3', 'h4', 'hr', 'select', 'option', 'input', 'textarea'], this.opts.allowedTags);
     this._allowedAttributes = $.extend({
       img: ['src', 'alt', 'width', 'height', 'data-non-image'],
       a: ['href', 'target'],
       font: ['color'],
-      code: ['class']
+      code: ['class'],
+      input: ['type', 'readonly', 'maxlength', 'placeholder', 'value', 'checked'],
+      textarea: ['readonly', 'maxlength', 'rows', 'cols'],
+      select: ['name'],
+      option: ['value']
     }, this.opts.allowedAttributes);
     this._allowedStyles = $.extend({
       span: ['color', 'font-size'],
@@ -5071,7 +5075,7 @@ TableButton = (function(superClass) {
 
   TableButton.prototype._init = function() {
     TableButton.__super__._init.call(this);
-    $.merge(this.editor.formatter._allowedTags, ['thead', 'th', 'tbody', 'tr', 'td', 'colgroup', 'col']);
+    $.merge(this.editor.formatter._allowedTags, ['thead', 'th', 'tbody', 'tr', 'td', 'colgroup', 'col', 'select', 'option', 'input']);
     $.extend(this.editor.formatter._allowedAttributes, {
       td: ['rowspan', 'colspan'],
       col: ['width']
@@ -5687,6 +5691,962 @@ AlignmentButton = (function(superClass) {
 })(Button);
 
 Simditor.Toolbar.addButton(AlignmentButton);
+
+InputButton = (function(superClass) {
+  extend(InputButton, superClass);
+
+  function InputButton() {
+    return InputButton.__super__.constructor.apply(this, arguments);
+  }
+
+  InputButton.prototype.name = 'input';
+
+  InputButton.prototype.icon = 'picture-o';
+
+  InputButton.prototype.htmlTag = 'input';
+
+  InputButton.prototype.disableTag = 'pre';
+
+  InputButton.prototype.needFocus = false;
+
+  InputButton.prototype.selector = 'input[type="text"],input[type="number"],input[type="email"]';
+
+  InputButton.prototype._init = function() {
+    this.menu = false;
+    this.editor.body.on('click', this.selector, (function(_this) {
+      return function(e) {
+        var $input, range;
+        $input = $(e.currentTarget);
+        range = document.createRange();
+        range.selectNode($input[0]);
+        _this.editor.selection.range(range);
+        return false;
+      };
+    })(this));
+    this.editor.body.on('mouseup', this.selector, function(e) {
+      return false;
+    });
+    this.editor.on('selectionchanged.input', (function(_this) {
+      return function() {
+        var $contents, $input, range;
+        range = _this.editor.selection.range();
+        if (range == null) {
+          return;
+        }
+        $contents = $(range.cloneContents()).contents();
+        if ($contents.length === 1 && $contents.is('input')) {
+          $input = $(range.startContainer).contents().eq(range.startOffset);
+          return _this.popover.show($input);
+        } else {
+          return _this.popover.hide();
+        }
+      };
+    })(this));
+    return InputButton.__super__._init.call(this);
+  };
+
+  InputButton.prototype.render = function() {
+    var args;
+    args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    InputButton.__super__.render.apply(this, args);
+    return this.popover = new InputPopover({
+      button: this
+    });
+  };
+
+  InputButton.prototype.renderMenu = function() {
+    return InputButton.__super__.renderMenu.call(this);
+  };
+
+  InputButton.prototype._status = function() {
+    return this._disableStatus();
+  };
+
+  InputButton.prototype.createInput = function() {
+    var $input, range;
+    if (!this.editor.inputManager.focused) {
+      this.editor.focus();
+    }
+    range = this.editor.selection.range();
+    range.deleteContents();
+    this.editor.selection.range(range);
+    $input = $('<input></input>').attr({
+      type: 'text',
+      readonly: true
+    });
+    range.insertNode($input[0]);
+    this.editor.selection.setRangeAfter($input, range);
+    this.editor.trigger('valuechanged');
+    return $input;
+  };
+
+  InputButton.prototype.command = function() {
+    var $input;
+    $input = this.createInput();
+    this.editor.util.reflow($input);
+    $input.click();
+    return this.popover.one('popovershow', (function(_this) {
+      return function() {
+        _this.popover.target.focus();
+        return _this.popover.target[0].select();
+      };
+    })(this));
+  };
+
+  return InputButton;
+
+})(Button);
+
+InputPopover = (function(superClass) {
+  var maxLengthField, typeField;
+
+  extend(InputPopover, superClass);
+
+  function InputPopover() {
+    return InputPopover.__super__.constructor.apply(this, arguments);
+  }
+
+  typeField = null;
+
+  maxLengthField = null;
+
+  InputPopover.prototype.render = function() {
+    var tpl;
+    tpl = "<div class=\"popover-title\">\n  <span>Configure the input</span>\n</div>\n<div class=\"popover-content\">\n  <table class=\"popover-fields\">\n    <tr>\n      <td class=\"field-name\">\n        Type:\n      </td>\n      <td>\n        <select class=\"simditor-input-type\">\n          <option value=\"text\">Text</option>\n          <option value=\"number\">Number</option>\n          <option value=\"email\">Email</option>\n        </select>\n      </td>\n    </tr>\n    <tr>\n      <td class=\"field-name\">\n        <label>Max length:</label>\n      </td>\n      <td>\n        <input class=\"simditor-input-maxlength\" type=\"number\" />\n      </td>\n    </tr>\n  </table>\n</div>";
+    this.el.addClass('input-popover').append(tpl);
+    this.typeField = this.el.find('.simditor-input-type');
+    this.maxLengthField = this.el.find('.simditor-input-maxlength');
+    return this._attachEvents();
+  };
+
+  InputPopover.prototype._loadCofig = function() {
+    var input;
+    input = this.target;
+    this.typeField.find('option[value="' + input.attr('type') + '"]').prop('selected', true);
+    return this.maxLengthField.val(input.attr('maxlength') || '');
+  };
+
+  InputPopover.prototype._attachEvents = function() {
+    this.typeField.on('change', (function(_this) {
+      return function() {
+        _this.target.val('');
+        return _this.target.attr('type', _this.typeField.val());
+      };
+    })(this));
+    return this.maxLengthField.on('blur', (function(_this) {
+      return function() {
+        _this.target.val('');
+        if (_this.maxLengthField.val() === '') {
+          return _this.target.removeAttr('maxlength');
+        } else {
+          return _this.target.attr('maxlength', _this.maxLengthField.val());
+        }
+      };
+    })(this));
+  };
+
+  InputPopover.prototype.show = function() {
+    var args;
+    args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    InputPopover.__super__.show.apply(this, args);
+    return this._loadCofig();
+  };
+
+  return InputPopover;
+
+})(Popover);
+
+Simditor.Toolbar.addButton(InputButton);
+
+TextareaButton = (function(superClass) {
+  extend(TextareaButton, superClass);
+
+  function TextareaButton() {
+    return TextareaButton.__super__.constructor.apply(this, arguments);
+  }
+
+  TextareaButton.prototype.name = 'textarea';
+
+  TextareaButton.prototype.icon = 'picture-o';
+
+  TextareaButton.prototype.htmlTag = 'textarea';
+
+  TextareaButton.prototype.disableTag = 'pre';
+
+  TextareaButton.prototype.needFocus = false;
+
+  TextareaButton.prototype.selector = 'textarea';
+
+  TextareaButton.prototype._init = function() {
+    this.menu = false;
+    this.editor.body.on('click', this.selector, (function(_this) {
+      return function(e) {
+        var $textarea, range;
+        $textarea = $(e.currentTarget);
+        range = document.createRange();
+        range.selectNode($textarea[0]);
+        _this.editor.selection.range(range);
+        return false;
+      };
+    })(this));
+    this.editor.body.on('mouseup', this.selector, function(e) {
+      return false;
+    });
+    this.editor.on('selectionchanged.textarea', (function(_this) {
+      return function() {
+        var $contents, $textarea, range;
+        range = _this.editor.selection.range();
+        if (range == null) {
+          return;
+        }
+        $contents = $(range.cloneContents()).contents();
+        if ($contents.length === 1 && $contents.is('textarea')) {
+          $textarea = $(range.startContainer).contents().eq(range.startOffset);
+          return _this.popover.show($textarea);
+        } else {
+          return _this.popover.hide();
+        }
+      };
+    })(this));
+    return TextareaButton.__super__._init.call(this);
+  };
+
+  TextareaButton.prototype.render = function() {
+    var args;
+    args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    TextareaButton.__super__.render.apply(this, args);
+    return this.popover = new TextareaPopover({
+      button: this
+    });
+  };
+
+  TextareaButton.prototype.renderMenu = function() {
+    return TextareaButton.__super__.renderMenu.call(this);
+  };
+
+  TextareaButton.prototype._status = function() {
+    return this._disableStatus();
+  };
+
+  TextareaButton.prototype.createTextarea = function() {
+    var $textarea, range;
+    if (!this.editor.inputManager.focused) {
+      this.editor.focus();
+    }
+    range = this.editor.selection.range();
+    range.deleteContents();
+    this.editor.selection.range(range);
+    $textarea = $('<textarea></textarea>').attr({
+      readonly: true
+    });
+    range.insertNode($textarea[0]);
+    this.editor.selection.setRangeAfter($textarea, range);
+    this.editor.trigger('valuechanged');
+    return $textarea;
+  };
+
+  TextareaButton.prototype.command = function() {
+    var $textarea;
+    $textarea = this.createTextarea();
+    this.editor.util.reflow($textarea);
+    $textarea.click();
+    return this.popover.one('popovershow', (function(_this) {
+      return function() {
+        _this.popover.target.focus();
+        return _this.popover.target[0].select();
+      };
+    })(this));
+  };
+
+  return TextareaButton;
+
+})(Button);
+
+TextareaPopover = (function(superClass) {
+  var colsField, maxLengthField, rowsField;
+
+  extend(TextareaPopover, superClass);
+
+  function TextareaPopover() {
+    return TextareaPopover.__super__.constructor.apply(this, arguments);
+  }
+
+  maxLengthField = null;
+
+  rowsField = 4;
+
+  colsField = 30;
+
+  TextareaPopover.prototype.render = function() {
+    var tpl;
+    tpl = "<div class=\"popover-title\">\n  <span>Configure the textarea</span>\n</div>\n<div class=\"popover-content\">\n  <table class=\"popover-fields\">\n    <tr>\n      <td class=\"field-name\">Rows:</td>\n      <td>\n        <input class=\"simditor-textarea-rows\" type=\"number\" />\n      </td>\n    </tr>\n    <tr>\n      <td class=\"field-name\">Columns:</td>\n      <td>\n        <input class=\"simditor-textarea-cols\" type=\"number\" />\n      </td>\n    </tr>\n    <tr>\n      <td class=\"field-name\">Max length:</td>\n      <td>\n        <input class=\"simditor-textarea-maxlength\" type=\"number\" />\n      </td>\n    </tr>\n  </table>\n</div>";
+    this.el.addClass('input-popover').append(tpl);
+    this.rowsField = this.el.find('.simditor-textarea-rows');
+    this.colsField = this.el.find('.simditor-textarea-cols');
+    this.maxLengthField = this.el.find('.simditor-textarea-maxlength');
+    return this._attachEvents();
+  };
+
+  TextareaPopover.prototype._loadCofig = function() {
+    var textarea;
+    textarea = this.target;
+    this.rowsField.val(textarea.attr('rows') || '4');
+    this.colsField.val(textarea.attr('cols') || '30');
+    return this.maxLengthField.val(textarea.attr('maxlength') || '');
+  };
+
+  TextareaPopover.prototype._attachEvents = function() {
+    this.rowsField.on('blur', (function(_this) {
+      return function() {
+        _this.target.val('');
+        if (_this.rowsField.val() === '') {
+          return _this.target.removeAttr('rows');
+        } else {
+          return _this.target.attr('rows', _this.rowsField.val());
+        }
+      };
+    })(this));
+    this.colsField.on('blur', (function(_this) {
+      return function() {
+        _this.target.val('');
+        if (_this.colsField.val() === '') {
+          return _this.target.removeAttr('cols');
+        } else {
+          return _this.target.attr('cols', _this.colsField.val());
+        }
+      };
+    })(this));
+    return this.maxLengthField.on('blur', (function(_this) {
+      return function() {
+        _this.target.val('');
+        if (_this.maxLengthField.val() === '') {
+          return _this.target.removeAttr('maxlength');
+        } else {
+          return _this.target.attr('maxlength', _this.maxLengthField.val());
+        }
+      };
+    })(this));
+  };
+
+  TextareaPopover.prototype.show = function() {
+    var args;
+    args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    TextareaPopover.__super__.show.apply(this, args);
+    return this._loadCofig();
+  };
+
+  return TextareaPopover;
+
+})(Popover);
+
+Simditor.Toolbar.addButton(TextareaButton);
+
+CheckboxButton = (function(superClass) {
+  extend(CheckboxButton, superClass);
+
+  function CheckboxButton() {
+    return CheckboxButton.__super__.constructor.apply(this, arguments);
+  }
+
+  CheckboxButton.prototype.name = 'checkbox';
+
+  CheckboxButton.prototype.icon = 'picture-o';
+
+  CheckboxButton.prototype.htmlTag = 'input';
+
+  CheckboxButton.prototype.disableTag = 'pre';
+
+  CheckboxButton.prototype.needFocus = false;
+
+  CheckboxButton.prototype.selector = 'input[type="checkbox"]';
+
+  CheckboxButton.prototype._init = function() {
+    this.menu = false;
+    this.editor.body.on('click', this.selector, (function(_this) {
+      return function(e) {
+        var $input, range;
+        $input = $(e.currentTarget);
+        range = document.createRange();
+        range.selectNode($input[0]);
+        _this.editor.selection.range(range);
+        return false;
+      };
+    })(this));
+    this.editor.body.on('mouseup', this.selector, function(e) {
+      return false;
+    });
+    this.editor.on('selectionchanged.checkbox', (function(_this) {
+      return function() {
+        var $contents, $input, range;
+        range = _this.editor.selection.range();
+        if (range == null) {
+          return;
+        }
+        $contents = $(range.cloneContents()).contents();
+        if ($contents.length === 1 && $contents.is('input[type=checkbox]')) {
+          $input = $(range.startContainer).contents().eq(range.startOffset);
+          return _this.popover.show($input);
+        } else {
+          return _this.popover.hide();
+        }
+      };
+    })(this));
+    return CheckboxButton.__super__._init.call(this);
+  };
+
+  CheckboxButton.prototype.render = function() {
+    var args;
+    args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    CheckboxButton.__super__.render.apply(this, args);
+    return this.popover = new CheckboxPopover({
+      button: this
+    });
+  };
+
+  CheckboxButton.prototype.renderMenu = function() {
+    return CheckboxButton.__super__.renderMenu.call(this);
+  };
+
+  CheckboxButton.prototype._status = function() {
+    return this._disableStatus();
+  };
+
+  CheckboxButton.prototype.createInput = function() {
+    var $input, range;
+    if (!this.editor.inputManager.focused) {
+      this.editor.focus();
+    }
+    range = this.editor.selection.range();
+    range.deleteContents();
+    this.editor.selection.range(range);
+    $input = $('<input/>').attr({
+      type: 'checkbox',
+      readonly: true
+    });
+    range.insertNode($input[0]);
+    this.editor.selection.setRangeAfter($input, range);
+    return $input;
+  };
+
+  CheckboxButton.prototype.command = function() {
+    var $input;
+    $input = this.createInput();
+    this.editor.util.reflow($input);
+    $input.focus();
+    this.popover.one('popovershow', (function(_this) {
+      return function() {
+        _this.popover.target.focus();
+        return _this.popover.target[0].select();
+      };
+    })(this));
+    return this.popover.show($input);
+  };
+
+  return CheckboxButton;
+
+})(Button);
+
+CheckboxPopover = (function(superClass) {
+  var checkedField, valueField;
+
+  extend(CheckboxPopover, superClass);
+
+  function CheckboxPopover() {
+    return CheckboxPopover.__super__.constructor.apply(this, arguments);
+  }
+
+  valueField = null;
+
+  checkedField = false;
+
+  CheckboxPopover.prototype.render = function() {
+    var tpl;
+    tpl = "<div class=\"popover-title\">\n  <span>Configure the checkbox</span>\n</div>\n<div class=\"popover-content\">\n  <table class=\"popover-fields\">\n    <tr>\n      <td class=\"field-name\">Value:</td>\n      <td>\n        <input class=\"simditor-input-value\" type=\"text\" />\n      </td>\n    </tr>\n    <tr>\n      <td class=\"field-name\">Checked:</td>\n      <td>\n        <input class=\"simditor-input-checked\" type=\"checkbox\" />\n      </td>\n    </tr>\n  </table>\n</div>";
+    this.el.addClass('input-popover').append(tpl);
+    this.valueField = this.el.find('.simditor-input-value');
+    this.checkedField = this.el.find('.simditor-input-checked');
+    return this._attachEvents();
+  };
+
+  CheckboxPopover.prototype._loadCofig = function() {
+    var input;
+    input = this.target;
+    this.checkedField.prop('checked', input.prop('checked'));
+    return this.valueField.val(input.attr('value') || '');
+  };
+
+  CheckboxPopover.prototype._attachEvents = function() {
+    this.checkedField.on('change', (function(_this) {
+      return function() {
+        return _this.target.prop('checked', _this.checkedField.prop('checked'));
+      };
+    })(this));
+    return this.valueField.on('blur', (function(_this) {
+      return function() {
+        _this.target.val('');
+        if (_this.valueField.val() === '') {
+          return _this.target.removeAttr('value');
+        } else {
+          return _this.target.attr('value', _this.valueField.val());
+        }
+      };
+    })(this));
+  };
+
+  CheckboxPopover.prototype.show = function() {
+    var args;
+    args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    CheckboxPopover.__super__.show.apply(this, args);
+    return this._loadCofig();
+  };
+
+  return CheckboxPopover;
+
+})(Popover);
+
+Simditor.Toolbar.addButton(CheckboxButton);
+
+RadioButton = (function(superClass) {
+  extend(RadioButton, superClass);
+
+  function RadioButton() {
+    return RadioButton.__super__.constructor.apply(this, arguments);
+  }
+
+  RadioButton.prototype.name = 'radio';
+
+  RadioButton.prototype.icon = 'picture-o';
+
+  RadioButton.prototype.htmlTag = 'input';
+
+  RadioButton.prototype.disableTag = 'pre';
+
+  RadioButton.prototype.needFocus = false;
+
+  RadioButton.prototype.selector = 'input[type="radio"]';
+
+  RadioButton.prototype._init = function() {
+    this.menu = false;
+    this.editor.body.on('click', this.selector, (function(_this) {
+      return function(e) {
+        var $input, range;
+        $input = $(e.currentTarget);
+        range = document.createRange();
+        range.selectNode($input[0]);
+        _this.editor.selection.range(range);
+        return false;
+      };
+    })(this));
+    this.editor.body.on('mouseup', this.selector, function(e) {
+      return false;
+    });
+    this.editor.on('selectionchanged.checkbox', (function(_this) {
+      return function() {
+        var $contents, $input, range;
+        range = _this.editor.selection.range();
+        if (range == null) {
+          return;
+        }
+        $contents = $(range.cloneContents()).contents();
+        if ($contents.length === 1 && $contents.is('input[type=radio]')) {
+          $input = $(range.startContainer).contents().eq(range.startOffset);
+          return _this.popover.show($input);
+        } else {
+          return _this.popover.hide();
+        }
+      };
+    })(this));
+    return RadioButton.__super__._init.call(this);
+  };
+
+  RadioButton.prototype.render = function() {
+    var args;
+    args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    RadioButton.__super__.render.apply(this, args);
+    return this.popover = new RadioPopover({
+      button: this
+    });
+  };
+
+  RadioButton.prototype.renderMenu = function() {
+    return RadioButton.__super__.renderMenu.call(this);
+  };
+
+  RadioButton.prototype.createInput = function() {
+    var $input, range;
+    if (!this.editor.inputManager.focused) {
+      this.editor.focus();
+    }
+    range = this.editor.selection.range();
+    range.deleteContents();
+    this.editor.selection.range(range);
+    $input = $('<input/>').attr({
+      type: 'radio',
+      readonly: true
+    });
+    range.insertNode($input[0]);
+    this.editor.selection.setRangeAfter($input, range);
+    return $input;
+  };
+
+  RadioButton.prototype.command = function() {
+    var $input;
+    $input = this.createInput();
+    this.editor.util.reflow($input);
+    $input.focus();
+    this.popover.one('popovershow', (function(_this) {
+      return function() {
+        _this.popover.target.focus();
+        return _this.popover.target[0].select();
+      };
+    })(this));
+    return this.popover.show($input);
+  };
+
+  return RadioButton;
+
+})(Button);
+
+RadioPopover = (function(superClass) {
+  var checkedField, groupField, valueField;
+
+  extend(RadioPopover, superClass);
+
+  function RadioPopover() {
+    return RadioPopover.__super__.constructor.apply(this, arguments);
+  }
+
+  valueField = null;
+
+  checkedField = false;
+
+  groupField = null;
+
+  RadioPopover.prototype.render = function() {
+    var tpl;
+    tpl = "<div class=\"popover-title\">\n  <span>Configure the radio</span>\n</div>\n<div class=\"popover-content\">\n  <table class=\"popover-fields\">\n    <tr>\n      <td class=\"field-name\">Group:</td>\n      <td>\n        <input class=\"simditor-input-group\" type=\"text\" />\n      </td>\n    </tr>\n    <tr>\n      <td class=\"field-name\">Value:</td>\n      <td>\n        <input class=\"simditor-input-value\" type=\"text\" />\n      </td>\n    </tr>\n    <tr>\n      <td class=\"field-name\">Checked:</td>\n      <td>\n        <input class=\"simditor-input-checked\" type=\"checkbox\" />\n      </td>\n    </tr>\n  </table>\n</div>";
+    this.el.addClass('input-popover').append(tpl);
+    this.groupField = this.el.find('.simditor-input-group');
+    this.checkedField = this.el.find('.simditor-input-checked');
+    this.valueField = this.el.find('.simditor-input-value');
+    return this._attachEvents();
+  };
+
+  RadioPopover.prototype._loadCofig = function() {
+    var input;
+    input = this.target;
+    this.groupField.val(input.attr('name') || null);
+    this.checkedField.prop('checked', input.prop('checked'));
+    return this.valueField.val(input.attr('value') || '');
+  };
+
+  RadioPopover.prototype._attachEvents = function() {
+    this.groupField.on('blur', (function(_this) {
+      return function() {
+        if (_this.groupField.val() === '') {
+          return _this.target.removeAttr('name');
+        } else {
+          return _this.target.attr('name', _this.groupField.val());
+        }
+      };
+    })(this));
+    this.checkedField.on('change', (function(_this) {
+      return function() {
+        return _this.target.prop('checked', _this.checkedField.prop('checked'));
+      };
+    })(this));
+    return this.valueField.on('blur', (function(_this) {
+      return function() {
+        if (_this.valueField.val() === '') {
+          return _this.target.removeAttr('value');
+        } else {
+          return _this.target.attr('value', _this.valueField.val());
+        }
+      };
+    })(this));
+  };
+
+  RadioPopover.prototype.show = function() {
+    var args;
+    args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    RadioPopover.__super__.show.apply(this, args);
+    return this._loadCofig();
+  };
+
+  return RadioPopover;
+
+})(Popover);
+
+Simditor.Toolbar.addButton(RadioButton);
+
+SelectButton = (function(superClass) {
+  extend(SelectButton, superClass);
+
+  function SelectButton() {
+    return SelectButton.__super__.constructor.apply(this, arguments);
+  }
+
+  SelectButton.prototype.name = 'select';
+
+  SelectButton.prototype.icon = 'minus';
+
+  SelectButton.prototype.htmlTag = 'select';
+
+  SelectButton.prototype.disableTag = 'pre';
+
+  SelectButton.prototype.needFocus = false;
+
+  SelectButton.prototype._init = function() {
+    this.menu = false;
+    this.editor.body.on('click', 'select', (function(_this) {
+      return function(e) {
+        var $select, range;
+        $select = $(e.currentTarget);
+        range = document.createRange();
+        range.selectNode($select[0]);
+        _this.editor.selection.range(range);
+        return false;
+      };
+    })(this));
+    this.editor.body.on('mouseup', 'select', function(e) {
+      return false;
+    });
+    this.editor.on('selectionchanged.select', (function(_this) {
+      return function() {
+        var $contents, $select, range;
+        range = _this.editor.selection.range();
+        if (range == null) {
+          return;
+        }
+        $contents = $(range.cloneContents()).contents();
+        if ($contents.length === 1 && $contents.is('select')) {
+          $select = $(range.startContainer).contents().eq(range.startOffset);
+          return _this.popover.show($select);
+        } else {
+          return _this.popover.hide();
+        }
+      };
+    })(this));
+    return SelectButton.__super__._init.call(this);
+  };
+
+  SelectButton.prototype.render = function() {
+    var args;
+    args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    SelectButton.__super__.render.apply(this, args);
+    return this.popover = new SelectPopover({
+      button: this
+    });
+  };
+
+  SelectButton.prototype.renderMenu = function() {
+    return SelectButton.__super__.renderMenu.call(this);
+  };
+
+  SelectButton.prototype._status = function() {
+    return this._disableStatus();
+  };
+
+  SelectButton.prototype.createSelect = function() {
+    var $select, range;
+    if (!this.editor.inputManager.focused) {
+      this.editor.focus();
+    }
+    range = this.editor.selection.range();
+    range.deleteContents();
+    this.editor.selection.range(range);
+    $select = $('<select></select>');
+    range.insertNode($select[0]);
+    this.editor.selection.setRangeAfter($select, range);
+    this.editor.trigger('valuechanged');
+    return $select;
+  };
+
+  SelectButton.prototype.command = function() {
+    var $select;
+    $select = this.createSelect();
+    this.editor.util.reflow($select);
+    $select.click();
+    return this.popover.one('popovershow', (function(_this) {
+      return function() {
+        return _this.popover.target.focus();
+      };
+    })(this));
+  };
+
+  return SelectButton;
+
+})(Button);
+
+SelectPopover = (function(superClass) {
+  var options;
+
+  extend(SelectPopover, superClass);
+
+  function SelectPopover() {
+    return SelectPopover.__super__.constructor.apply(this, arguments);
+  }
+
+  options = [];
+
+  SelectPopover.prototype.render = function() {
+    var tpl;
+    tpl = "<div class=\"popover-title\">\n  <span>Configure the select</span>\n</div>\n<div class=\"popover-content\">\n  <table class=\"popover-fields\">\n    <tr>\n      <td class=\"field-name\">Add new option</td>\n    </tr>\n    <tr>\n      <td>\n        <input class=\"simditor-select-text\" placeholder=\"Display text\" />\n        <input class=\"simditor-select-value\" placeholder=\"Value\" />\n        <button class=\"simditor-select-add\">ADD</button>\n      </td>\n    </tr>\n    <tr>\n      <td>\n        <span class=\"simditor-select-error\">\n          Display text and value are required.\n        </span>\n      </td>\n    </tr>\n  </table>\n  <table class=\"popover-fields\">\n    <tr>\n      <td class=\"field-name\">Options:</td>\n    </tr>\n    <tr>\n      <td>\n        <div class=\"simditor-select-options\"></div>\n      </td>\n    </tr>\n  </table>\n</div>";
+    this.el.addClass('select-popover').append(tpl);
+    this.el.find('.simditor-select-error').hide();
+    return this._attachAddEvents();
+  };
+
+  SelectPopover.prototype._loadCofig = function() {
+    var select;
+    select = this.target;
+    return select.find('option').each((function(_this) {
+      return function(i, element) {
+        return options.push({
+          text: $(element).text(),
+          value: $(element).val()
+        });
+      };
+    })(this));
+  };
+
+  SelectPopover.prototype._renderOptions = function() {
+    var popover;
+    popover = this.el;
+    popover.find('.simditor-select-options').html("<table class=\"option-table\">\n  <thead>\n    <tr>\n      <th>Display text</th>\n      <th>Value</th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody></tbody>\n</table>");
+    if (options.length === 0) {
+      popover.find('.simditor-select-options table tbody').append("<tr>\n  <td class=\"empty-rows\" colspan=\"3\">\n    There are no options yet\n  </td>\n</tr>");
+      this._renderSelectOptions();
+      return;
+    }
+    options.forEach((function(_this) {
+      return function(item, index) {
+        return popover.find('.simditor-select-options table tbody').append("<tr data-index=\"" + index + "\">\n  <td>\n    " + item.text + "\n  </td>\n  <td>\n    " + item.value + "\n  </td>\n  <td class=\"row-actions\">\n    <button class=\"simditor-option-up\" data-index=\"" + index + "\" title=\"Move option up\">\n      <i class=\"simditor-icon simditor-icon-caret-down\" data-index=\"" + index + "\"></i>\n    </button>\n    <button class=\"simditor-option-down\" data-index=\"" + index + "\" title=\"Move option down\">\n      <i class=\"simditor-icon simditor-icon-caret-down\" data-index=\"" + index + "\"></i>\n    </button>\n    <button class=\"simditor-option-remove\" data-index=\"" + index + "\" title=\"Remove option\">\n      <i class=\"simditor-icon simditor-icon-minus\" data-index=\"" + index + "\"></i>\n    </button>\n  </td>\n</tr>");
+      };
+    })(this));
+    this._attachOptionEvents();
+    return this._renderSelectOptions();
+  };
+
+  SelectPopover.prototype._renderSelectOptions = function() {
+    var select;
+    select = this.target;
+    select.find('option').remove();
+    return options.forEach(function(option) {
+      return select.append("<option value='" + option.value + "'>" + option.text + "</option>");
+    });
+  };
+
+  SelectPopover.prototype._moveOption = function(index, direction) {
+    var ref, ref1;
+    index = parseInt(index);
+    if (index === 0 && direction === 'up') {
+      return;
+    }
+    if (index === options.length - 1 && direction === 'down') {
+      return;
+    }
+    if (direction === 'up') {
+      ref = [options[index - 1], options[index]], options[index] = ref[0], options[index - 1] = ref[1];
+    } else {
+      ref1 = [options[index + 1], options[index]], options[index] = ref1[0], options[index + 1] = ref1[1];
+    }
+    return this._renderOptions();
+  };
+
+  SelectPopover.prototype._removeOption = function(index) {
+    options.splice(parseInt(index), 1);
+    return this._renderOptions();
+  };
+
+  SelectPopover.prototype._addOption = function() {
+    var popover, textField, valueField;
+    popover = this.el;
+    textField = popover.find('.simditor-select-text');
+    valueField = popover.find('.simditor-select-value');
+    if (textField.val() === '' || valueField.val() === '') {
+      return popover.find('.simditor-select-error').show();
+    } else {
+      options.push({
+        text: textField.val(),
+        value: valueField.val()
+      });
+      this._renderOptions();
+      this._resetAddOption();
+      return popover.find('.simditor-select-text').focus();
+    }
+  };
+
+  SelectPopover.prototype._resetAddOption = function() {
+    var popover;
+    popover = this.el;
+    popover.find('.simditor-select-text').val('');
+    popover.find('.simditor-select-value').val('');
+    return popover.find('.simditor-select-error').hide();
+  };
+
+  SelectPopover.prototype._attachOptionEvents = function() {
+    var popover;
+    popover = this.el;
+    popover.find('.simditor-option-up').on('click', (function(_this) {
+      return function(e) {
+        return _this._moveOption(e.target.dataset.index, 'up');
+      };
+    })(this));
+    popover.find('.simditor-option-down').on('click', (function(_this) {
+      return function(e) {
+        return _this._moveOption(e.target.dataset.index, 'down');
+      };
+    })(this));
+    return popover.find('.simditor-option-remove').on('click', (function(_this) {
+      return function(e) {
+        return _this._removeOption(e.target.dataset.index);
+      };
+    })(this));
+  };
+
+  SelectPopover.prototype._attachAddEvents = function() {
+    var popover;
+    popover = this.el;
+    popover.find('.simditor-select-add').on('click', (function(_this) {
+      return function() {
+        return _this._addOption();
+      };
+    })(this));
+    popover.find('.simditor-select-text').on('keyup', (function(_this) {
+      return function(e) {
+        if (e.which !== 13) {
+          return;
+        }
+        return _this._addOption();
+      };
+    })(this));
+    return popover.find('.simditor-select-value').on('keyup', (function(_this) {
+      return function(e) {
+        if (e.which !== 13) {
+          return;
+        }
+        return _this._addOption();
+      };
+    })(this));
+  };
+
+  SelectPopover.prototype.show = function() {
+    var args;
+    args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    SelectPopover.__super__.show.apply(this, args);
+    options = [];
+    this._resetAddOption();
+    this._loadCofig();
+    this._renderOptions();
+    return this.el.find('.simditor-select-text').focus();
+  };
+
+  return SelectPopover;
+
+})(Popover);
+
+Simditor.Toolbar.addButton(SelectButton);
 
 return Simditor;
 
