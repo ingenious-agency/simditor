@@ -1,6 +1,6 @@
 class SelectButton extends Button
   name: 'select'
-  icon: 'minus'
+  icon: 'select'
   htmlTag: 'select'
   disableTag: 'pre'
   needFocus: false

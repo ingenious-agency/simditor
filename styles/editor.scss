@@ -443,6 +443,62 @@ $simditor-button-width: 46px;
         }
       }
     }
+
+    // TODO: Jubar -> hack until new font
+    .simditor-icon-textbox {
+      background: url(icons/ck-icons.png) no-repeat 0 -806px;
+      background-size: 15px;
+      float: left;
+      width: 20px;
+      height: 20px;
+      top: 8px;
+      position: relative;
+      left: 15px;
+    }
+
+    .simditor-icon-checkbox {
+      background: url(icons/ck-icons.png) no-repeat 0 -604px;
+      background-size: 15px;
+      float: left;
+      width: 20px;
+      height: 20px;
+      top: 8px;
+      position: relative;
+      left: 15px;
+    }
+
+    .simditor-icon-radio {
+      background: url(icons/ck-icons.png) no-repeat 0 -694px;
+      background-size: 15px;
+      float: left;
+      width: 20px;
+      height: 20px;
+      top: 8px;
+      position: relative;
+      left: 15px;
+    }
+
+    .simditor-icon-textarea {
+      background: url(icons/ck-icons.png) no-repeat 0 -785px;
+      background-size: 15px;
+      float: left;
+      width: 20px;
+      height: 20px;
+      top: 8px;
+      position: relative;
+      left: 15px;
+    }
+
+    .simditor-icon-select {
+      background: url(icons/ck-icons.png) no-repeat 0 -716px;
+      background-size: 15px;
+      float: left;
+      width: 20px;
+      height: 20px;
+      top: 8px;
+      position: relative;
+      left: 15px;
+    }
   }
 
   .simditor-popover {

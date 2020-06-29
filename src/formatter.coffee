@@ -23,10 +23,10 @@ class Formatter extends SimpleModule
       a: ['href', 'target']
       font: ['color']
       code: ['class']
-      input: ['type', 'readonly', 'maxlength', 'placeholder', 'value', 'checked']
+      input: ['type', 'readonly', 'maxlength', 'placeholder', 'value', 'checked', 'name']
       textarea: ['readonly', 'maxlength', 'rows', 'cols']
       select: ['name']
-      option: ['value']
+      option: ['value', 'selected']
     , @opts.allowedAttributes
 
     @_allowedStyles = $.extend

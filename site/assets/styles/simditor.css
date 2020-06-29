@@ -511,6 +511,56 @@
 .simditor .simditor-toolbar .toolbar-menu.toolbar-menu-alignment .menu-item {
   text-align: center;
 }
+.simditor .simditor-toolbar .simditor-icon-textbox {
+  background: url(icons/ck-icons.png) no-repeat 0 -806px;
+  background-size: 15px;
+  float: left;
+  width: 20px;
+  height: 20px;
+  top: 8px;
+  position: relative;
+  left: 15px;
+}
+.simditor .simditor-toolbar .simditor-icon-checkbox {
+  background: url(icons/ck-icons.png) no-repeat 0 -604px;
+  background-size: 15px;
+  float: left;
+  width: 20px;
+  height: 20px;
+  top: 8px;
+  position: relative;
+  left: 15px;
+}
+.simditor .simditor-toolbar .simditor-icon-radio {
+  background: url(icons/ck-icons.png) no-repeat 0 -694px;
+  background-size: 15px;
+  float: left;
+  width: 20px;
+  height: 20px;
+  top: 8px;
+  position: relative;
+  left: 15px;
+}
+.simditor .simditor-toolbar .simditor-icon-textarea {
+  background: url(icons/ck-icons.png) no-repeat 0 -785px;
+  background-size: 15px;
+  float: left;
+  width: 20px;
+  height: 20px;
+  top: 8px;
+  position: relative;
+  left: 15px;
+}
+.simditor .simditor-toolbar .simditor-icon-select {
+  background: url(icons/ck-icons.png) no-repeat 0 -716px;
+  background-size: 15px;
+  float: left;
+  width: 20px;
+  height: 20px;
+  top: 8px;
+  position: relative;
+  left: 15px;
+}
 .simditor .simditor-popover {
   display: none;
   padding: 0;

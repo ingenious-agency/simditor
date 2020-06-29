@@ -482,10 +482,10 @@ Formatter = (function(superClass) {
       a: ['href', 'target'],
       font: ['color'],
       code: ['class'],
-      input: ['type', 'readonly', 'maxlength', 'placeholder', 'value', 'checked'],
+      input: ['type', 'readonly', 'maxlength', 'placeholder', 'value', 'checked', 'name'],
       textarea: ['readonly', 'maxlength', 'rows', 'cols'],
       select: ['name'],
-      option: ['value']
+      option: ['value', 'selected']
     }, this.opts.allowedAttributes);
     this._allowedStyles = $.extend({
       span: ['color', 'font-size'],
@@ -2860,7 +2860,12 @@ Simditor.i18n = {
     'fontScaleLarge': 'Large Size',
     'fontScaleNormal': 'Normal Size',
     'fontScaleSmall': 'Small Size',
-    'fontScaleXSmall': 'X Small Size'
+    'fontScaleXSmall': 'X Small Size',
+    'input': 'Input text',
+    'checkbox': 'Checkbox',
+    'radio': 'Redio button',
+    'select': 'Dropdown',
+    'textarea': 'Text area'
   }
 };
 
@@ -5701,7 +5706,7 @@ InputButton = (function(superClass) {
 
   InputButton.prototype.name = 'input';
 
-  InputButton.prototype.icon = 'picture-o';
+  InputButton.prototype.icon = 'textbox';
 
   InputButton.prototype.htmlTag = 'input';
 
@@ -5771,8 +5776,7 @@ InputButton = (function(superClass) {
     range.deleteContents();
     this.editor.selection.range(range);
     $input = $('<input></input>').attr({
-      type: 'text',
-      readonly: true
+      type: 'text'
     });
     range.insertNode($input[0]);
     this.editor.selection.setRangeAfter($input, range);
@@ -5867,7 +5871,7 @@ TextareaButton = (function(superClass) {
 
   TextareaButton.prototype.name = 'textarea';
 
-  TextareaButton.prototype.icon = 'picture-o';
+  TextareaButton.prototype.icon = 'textarea';
 
   TextareaButton.prototype.htmlTag = 'textarea';
 
@@ -5936,9 +5940,7 @@ TextareaButton = (function(superClass) {
     range = this.editor.selection.range();
     range.deleteContents();
     this.editor.selection.range(range);
-    $textarea = $('<textarea></textarea>').attr({
-      readonly: true
-    });
+    $textarea = $('<textarea></textarea>');
     range.insertNode($textarea[0]);
     this.editor.selection.setRangeAfter($textarea, range);
     this.editor.trigger('valuechanged');
@@ -6050,7 +6052,7 @@ CheckboxButton = (function(superClass) {
 
   CheckboxButton.prototype.name = 'checkbox';
 
-  CheckboxButton.prototype.icon = 'picture-o';
+  CheckboxButton.prototype.icon = 'checkbox';
 
   CheckboxButton.prototype.htmlTag = 'input';
 
@@ -6120,8 +6122,7 @@ CheckboxButton = (function(superClass) {
     range.deleteContents();
     this.editor.selection.range(range);
     $input = $('<input/>').attr({
-      type: 'checkbox',
-      readonly: true
+      type: 'checkbox'
     });
     range.insertNode($input[0]);
     this.editor.selection.setRangeAfter($input, range);
@@ -6215,7 +6216,7 @@ RadioButton = (function(superClass) {
 
   RadioButton.prototype.name = 'radio';
 
-  RadioButton.prototype.icon = 'picture-o';
+  RadioButton.prototype.icon = 'radio';
 
   RadioButton.prototype.htmlTag = 'input';
 
@@ -6281,8 +6282,7 @@ RadioButton = (function(superClass) {
     range.deleteContents();
     this.editor.selection.range(range);
     $input = $('<input/>').attr({
-      type: 'radio',
-      readonly: true
+      type: 'radio'
     });
     range.insertNode($input[0]);
     this.editor.selection.setRangeAfter($input, range);
@@ -6388,7 +6388,7 @@ SelectButton = (function(superClass) {
 
   SelectButton.prototype.name = 'select';
 
-  SelectButton.prototype.icon = 'minus';
+  SelectButton.prototype.icon = 'select';
 
   SelectButton.prototype.htmlTag = 'select';
 

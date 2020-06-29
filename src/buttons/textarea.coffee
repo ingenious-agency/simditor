@@ -1,6 +1,6 @@
 class TextareaButton extends Button
   name: 'textarea'
-  icon: 'picture-o'
+  icon: 'textarea'
   htmlTag: 'textarea'
   disableTag: 'pre'
   needFocus: false
@@ -50,9 +50,7 @@ class TextareaButton extends Button
     range.deleteContents()
     @editor.selection.range range
 
-    $textarea = $('<textarea></textarea>').attr(
-      readonly: true
-    )
+    $textarea = $('<textarea></textarea>')
     range.insertNode $textarea[0]
     @editor.selection.setRangeAfter $textarea, range
     @editor.trigger 'valuechanged'

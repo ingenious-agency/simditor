@@ -1,7 +1,7 @@
 
 class InputButton extends Button
   name: 'input'
-  icon: 'picture-o'
+  icon: 'textbox'
   htmlTag: 'input'
   disableTag: 'pre'
   needFocus: false
@@ -53,7 +53,6 @@ class InputButton extends Button
 
     $input = $('<input></input>').attr(
       type: 'text'
-      readonly: true
     )
     range.insertNode $input[0]
     @editor.selection.setRangeAfter $input, range

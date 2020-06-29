@@ -1,6 +1,6 @@
 class CheckboxButton extends Button
   name: 'checkbox'
-  icon: 'picture-o'
+  icon: 'checkbox'
   htmlTag: 'input'
   disableTag: 'pre'
   needFocus: false
@@ -52,7 +52,6 @@ class CheckboxButton extends Button
 
     $input = $('<input/>').attr(
       type: 'checkbox'
-      readonly: true
     )
     range.insertNode $input[0]
     @editor.selection.setRangeAfter $input, range

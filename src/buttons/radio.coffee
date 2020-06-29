@@ -1,6 +1,6 @@
 class RadioButton extends Button
   name: 'radio'
-  icon: 'picture-o'
+  icon: 'radio'
   htmlTag: 'input'
   disableTag: 'pre'
   needFocus: false
@@ -53,7 +53,6 @@ class RadioButton extends Button
 
     $input = $('<input/>').attr(
       type: 'radio'
-      readonly: true
     )
     range.insertNode $input[0]
     @editor.selection.setRangeAfter $input, range
