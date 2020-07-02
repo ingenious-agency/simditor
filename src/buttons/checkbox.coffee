@@ -1,4 +1,5 @@
 class CheckboxButton extends Button
+  @connect Util
   name: 'checkbox'
   icon: 'checkbox'
   htmlTag: 'input'
@@ -50,7 +51,7 @@ class CheckboxButton extends Button
     range.deleteContents()
     @editor.selection.range range
 
-    $input = $('<input/>').attr(
+    $input = $("<input id='#{@util.generateRandomId()}'/>").attr(
       type: 'checkbox'
     )
     range.insertNode $input[0]

@@ -14,6 +14,7 @@ module.exports = (grunt) ->
             'src/selection.coffee'
             'src/formatter.coffee'
             'src/inputManager.coffee'
+            'src/htmlInputManager.coffee'
             'src/keystroke.coffee'
             'src/undoManager.coffee'
             'src/util.coffee'

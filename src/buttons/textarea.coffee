@@ -1,4 +1,5 @@
 class TextareaButton extends Button
+  @connect Util
   name: 'textarea'
   icon: 'textarea'
   htmlTag: 'textarea'
@@ -50,7 +51,7 @@ class TextareaButton extends Button
     range.deleteContents()
     @editor.selection.range range
 
-    $textarea = $('<textarea></textarea>')
+    $textarea = $("<textarea id='#{@util.generateRandomId()}'></textarea>")
     range.insertNode $textarea[0]
     @editor.selection.setRangeAfter $textarea, range
     @editor.trigger 'valuechanged'

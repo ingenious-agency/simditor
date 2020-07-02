@@ -1,4 +1,5 @@
 class SelectButton extends Button
+  @connect Util
   name: 'select'
   icon: 'select'
   htmlTag: 'select'
@@ -49,7 +50,7 @@ class SelectButton extends Button
     range.deleteContents()
     @editor.selection.range range
 
-    $select = $('<select></select>')
+    $select = $("<select id='#{@util.generateRandomId()}'></select>")
     range.insertNode $select[0]
     @editor.selection.setRangeAfter $select, range
     @editor.trigger 'valuechanged'

@@ -23,9 +23,9 @@ class Formatter extends SimpleModule
       a: ['href', 'target']
       font: ['color']
       code: ['class']
-      input: ['type', 'readonly', 'maxlength', 'placeholder', 'value', 'checked', 'name']
-      textarea: ['readonly', 'maxlength', 'rows', 'cols']
-      select: ['name']
+      input: ['id', 'type', 'maxlength', 'placeholder', 'value', 'checked', 'name']
+      textarea: ['id', 'maxlength', 'rows', 'cols']
+      select: ['id', 'name']
       option: ['value', 'selected']
     , @opts.allowedAttributes
 

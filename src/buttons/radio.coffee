@@ -1,4 +1,5 @@
 class RadioButton extends Button
+  @connect Util
   name: 'radio'
   icon: 'radio'
   htmlTag: 'input'
@@ -41,9 +42,8 @@ class RadioButton extends Button
   renderMenu: ->
     super()
 
-  # TODO: Jubar, ver si esto no me impide copy paste
-  # _status: ->
-  #   @_disableStatus()
+  _status: ->
+    @_disableStatus()
 
   createInput: () ->
     @editor.focus() unless @editor.inputManager.focused
@@ -51,7 +51,7 @@ class RadioButton extends Button
     range.deleteContents()
     @editor.selection.range range
 
-    $input = $('<input/>').attr(
+    $input = $("<input id='#{@util.generateRandomId()}'/>").attr(
       type: 'radio'
     )
     range.insertNode $input[0]

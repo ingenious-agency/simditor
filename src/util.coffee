@@ -220,3 +220,11 @@ class Util extends SimpleModule
       lastMatch = match
 
     $.trim result
+
+  generateRandomId: ->
+    # TODO: Jubar -> We can import uuid library to generate these ids.
+    min = 1000
+    max = 10000
+    random = Math.floor(Math.random() * (max - min) + min)
+    timestamp = new Date().getTime()
+    return "#{random}-#{timestamp}";

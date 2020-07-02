@@ -1,5 +1,6 @@
 
 class InputButton extends Button
+  @connect Util
   name: 'input'
   icon: 'textbox'
   htmlTag: 'input'
@@ -51,7 +52,7 @@ class InputButton extends Button
     range.deleteContents()
     @editor.selection.range range
 
-    $input = $('<input></input>').attr(
+    $input = $("<input id='#{@util.generateRandomId()}'></input>").attr(
       type: 'text'
     )
     range.insertNode $input[0]

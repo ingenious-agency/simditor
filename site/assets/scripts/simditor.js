@@ -14,7 +14,7 @@
   }
 }(this, function ($, SimpleModule, simpleHotkeys, simpleUploader, DOMPurify) {
 
-var AlignmentButton, BlockquoteButton, BoldButton, Button, CheckboxButton, CheckboxPopover, Clipboard, CodeButton, CodePopover, ColorButton, FontScaleButton, Formatter, HrButton, ImageButton, ImagePopover, IndentButton, Indentation, InputButton, InputManager, InputPopover, ItalicButton, Keystroke, LinkButton, LinkPopover, ListButton, OrderListButton, OutdentButton, Popover, RadioButton, RadioPopover, SelectButton, SelectPopover, Selection, Simditor, StrikethroughButton, TableButton, TextareaButton, TextareaPopover, TitleButton, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util,
+var AlignmentButton, BlockquoteButton, BoldButton, Button, CheckboxButton, CheckboxPopover, Clipboard, CodeButton, CodePopover, ColorButton, FontScaleButton, Formatter, HrButton, HtmlInputManager, ImageButton, ImagePopover, IndentButton, Indentation, InputButton, InputManager, InputPopover, ItalicButton, Keystroke, LinkButton, LinkPopover, ListButton, OrderListButton, OutdentButton, Popover, RadioButton, RadioPopover, SelectButton, SelectPopover, Selection, Simditor, StrikethroughButton, TableButton, TextareaButton, TextareaPopover, TitleButton, Toolbar, UnderlineButton, UndoManager, UnorderListButton, Util,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
@@ -482,9 +482,9 @@ Formatter = (function(superClass) {
       a: ['href', 'target'],
       font: ['color'],
       code: ['class'],
-      input: ['type', 'readonly', 'maxlength', 'placeholder', 'value', 'checked', 'name'],
-      textarea: ['readonly', 'maxlength', 'rows', 'cols'],
-      select: ['name'],
+      input: ['id', 'type', 'maxlength', 'placeholder', 'value', 'checked', 'name'],
+      textarea: ['id', 'maxlength', 'rows', 'cols'],
+      select: ['id', 'name'],
       option: ['value', 'selected']
     }, this.opts.allowedAttributes);
     this._allowedStyles = $.extend({
@@ -1020,6 +1020,74 @@ InputManager = (function(superClass) {
   };
 
   return InputManager;
+
+})(SimpleModule);
+
+HtmlInputManager = (function(superClass) {
+  extend(HtmlInputManager, superClass);
+
+  function HtmlInputManager() {
+    return HtmlInputManager.__super__.constructor.apply(this, arguments);
+  }
+
+  HtmlInputManager.pluginName = 'HtmlInputManager';
+
+  HtmlInputManager.prototype._inputs = [];
+
+  HtmlInputManager.prototype._init = function() {
+    this.editor = this._module;
+    this.editor.on('initialized', (function(_this) {
+      return function() {
+        return _this._generateInputs();
+      };
+    })(this));
+    return this.editor.on('blur', (function(_this) {
+      return function() {
+        return _this._generateInputs();
+      };
+    })(this));
+  };
+
+  HtmlInputManager.prototype._generateInputs = function() {
+    this._inputs = [];
+    this._generateMissingIds();
+    return this.editor.body.find('input, textarea, select').each((function(_this) {
+      return function(i, elem) {
+        var id, type;
+        id = $(elem).attr('id');
+        type = _this._getElementType(elem);
+        return _this._addInput(id, type);
+      };
+    })(this));
+  };
+
+  HtmlInputManager.prototype._addInput = function(id, type, value) {
+    return this._inputs.push({
+      id: id,
+      type: type
+    });
+  };
+
+  HtmlInputManager.prototype._getElementType = function(elem) {
+    var type;
+    type = elem.tagName.toLowerCase();
+    if ($(elem).is('input')) {
+      type = $(elem).attr('type');
+    }
+    return type;
+  };
+
+  HtmlInputManager.prototype._generateMissingIds = function() {
+    return this.editor.body.find('input, textarea, select').each((function(_this) {
+      return function(i, elem) {
+        if ($(elem).attr('id') === void 0) {
+          return $(elem).attr('id', _this.editor.util.generateRandomId());
+        }
+      };
+    })(this));
+  };
+
+  return HtmlInputManager;
 
 })(SimpleModule);
 
@@ -1906,6 +1974,15 @@ Util = (function(superClass) {
     return $.trim(result);
   };
 
+  Util.prototype.generateRandomId = function() {
+    var max, min, random, timestamp;
+    min = 1000;
+    max = 10000;
+    random = Math.floor(Math.random() * (max - min) + min);
+    timestamp = new Date().getTime();
+    return random + "-" + timestamp;
+  };
+
   return Util;
 
 })(SimpleModule);
@@ -2543,6 +2620,8 @@ Simditor = (function(superClass) {
 
   Simditor.connect(InputManager);
 
+  Simditor.connect(HtmlInputManager);
+
   Simditor.connect(Selection);
 
   Simditor.connect(UndoManager);
@@ -2749,6 +2828,10 @@ Simditor = (function(superClass) {
     $(document).off('.simditor-' + this.id);
     $(window).off('.simditor-' + this.id);
     return this.off();
+  };
+
+  Simditor.prototype.getHtmlInputs = function() {
+    return this.htmlInputManager._inputs;
   };
 
   return Simditor;
@@ -5704,6 +5787,8 @@ InputButton = (function(superClass) {
     return InputButton.__super__.constructor.apply(this, arguments);
   }
 
+  InputButton.connect(Util);
+
   InputButton.prototype.name = 'input';
 
   InputButton.prototype.icon = 'textbox';
@@ -5775,7 +5860,7 @@ InputButton = (function(superClass) {
     range = this.editor.selection.range();
     range.deleteContents();
     this.editor.selection.range(range);
-    $input = $('<input></input>').attr({
+    $input = $("<input id='" + (this.util.generateRandomId()) + "'></input>").attr({
       type: 'text'
     });
     range.insertNode($input[0]);
@@ -5869,6 +5954,8 @@ TextareaButton = (function(superClass) {
     return TextareaButton.__super__.constructor.apply(this, arguments);
   }
 
+  TextareaButton.connect(Util);
+
   TextareaButton.prototype.name = 'textarea';
 
   TextareaButton.prototype.icon = 'textarea';
@@ -5940,7 +6027,7 @@ TextareaButton = (function(superClass) {
     range = this.editor.selection.range();
     range.deleteContents();
     this.editor.selection.range(range);
-    $textarea = $('<textarea></textarea>');
+    $textarea = $("<textarea id='" + (this.util.generateRandomId()) + "'></textarea>");
     range.insertNode($textarea[0]);
     this.editor.selection.setRangeAfter($textarea, range);
     this.editor.trigger('valuechanged');
@@ -6050,6 +6137,8 @@ CheckboxButton = (function(superClass) {
     return CheckboxButton.__super__.constructor.apply(this, arguments);
   }
 
+  CheckboxButton.connect(Util);
+
   CheckboxButton.prototype.name = 'checkbox';
 
   CheckboxButton.prototype.icon = 'checkbox';
@@ -6121,7 +6210,7 @@ CheckboxButton = (function(superClass) {
     range = this.editor.selection.range();
     range.deleteContents();
     this.editor.selection.range(range);
-    $input = $('<input/>').attr({
+    $input = $("<input id='" + (this.util.generateRandomId()) + "'/>").attr({
       type: 'checkbox'
     });
     range.insertNode($input[0]);
@@ -6214,6 +6303,8 @@ RadioButton = (function(superClass) {
     return RadioButton.__super__.constructor.apply(this, arguments);
   }
 
+  RadioButton.connect(Util);
+
   RadioButton.prototype.name = 'radio';
 
   RadioButton.prototype.icon = 'radio';
@@ -6273,6 +6364,10 @@ RadioButton = (function(superClass) {
     return RadioButton.__super__.renderMenu.call(this);
   };
 
+  RadioButton.prototype._status = function() {
+    return this._disableStatus();
+  };
+
   RadioButton.prototype.createInput = function() {
     var $input, range;
     if (!this.editor.inputManager.focused) {
@@ -6281,7 +6376,7 @@ RadioButton = (function(superClass) {
     range = this.editor.selection.range();
     range.deleteContents();
     this.editor.selection.range(range);
-    $input = $('<input/>').attr({
+    $input = $("<input id='" + (this.util.generateRandomId()) + "'/>").attr({
       type: 'radio'
     });
     range.insertNode($input[0]);
@@ -6386,6 +6481,8 @@ SelectButton = (function(superClass) {
     return SelectButton.__super__.constructor.apply(this, arguments);
   }
 
+  SelectButton.connect(Util);
+
   SelectButton.prototype.name = 'select';
 
   SelectButton.prototype.icon = 'select';
@@ -6455,7 +6552,7 @@ SelectButton = (function(superClass) {
     range = this.editor.selection.range();
     range.deleteContents();
     this.editor.selection.range(range);
-    $select = $('<select></select>');
+    $select = $("<select id='" + (this.util.generateRandomId()) + "'></select>");
     range.insertNode($select[0]);
     this.editor.selection.setRangeAfter($select, range);
     this.editor.trigger('valuechanged');
