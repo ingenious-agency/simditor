@@ -107,6 +107,6 @@ Simditor.i18n =
     'fontScaleXSmall': 'X Small Size'
     'input': 'Input text'
     'checkbox': 'Checkbox'
-    'radio': 'Redio button'
+    'radio': 'Radio button'
     'select': 'Dropdown'
     'textarea': 'Text area'
