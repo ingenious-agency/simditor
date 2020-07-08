@@ -51,7 +51,7 @@ class TextareaButton extends Button
     range.deleteContents()
     @editor.selection.range range
 
-    $textarea = $("<textarea id='#{@util.generateRandomId()}'></textarea>")
+    $textarea = $("<textarea id='#{@util.generateRandomId()}' cols='10' rows='2'></textarea>")
     range.insertNode $textarea[0]
     @editor.selection.setRangeAfter $textarea, range
     @editor.trigger 'valuechanged'
@@ -83,13 +83,13 @@ class TextareaPopover extends Popover
         <tr>
           <td class="field-name">Rows:</td>
           <td>
-            <input class="simditor-textarea-rows" type="number" />
+            <input class="simditor-textarea-rows" type="number" min="1" />
           </td>
         </tr>
         <tr>
           <td class="field-name">Columns:</td>
           <td>
-            <input class="simditor-textarea-cols" type="number" />
+            <input class="simditor-textarea-cols" type="number" min="1" />
           </td>
         </tr>
         <tr>
@@ -98,6 +98,7 @@ class TextareaPopover extends Popover
             <input class="simditor-textarea-maxlength" type="number" />
           </td>
         </tr>
+        
       </table>
     </div>
     """
@@ -113,8 +114,8 @@ class TextareaPopover extends Popover
     textarea = @target
 
     # Load values from the rendered input
-    @rowsField.val(textarea.attr('rows') || '4')
-    @colsField.val(textarea.attr('cols') || '30')
+    @rowsField.val(textarea.attr('rows') || '2')
+    @colsField.val(textarea.attr('cols') || '10')
     @maxLengthField.val(textarea.attr('maxlength') || '')
 
   _attachEvents: () ->

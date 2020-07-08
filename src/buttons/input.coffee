@@ -52,7 +52,7 @@ class InputButton extends Button
     range.deleteContents()
     @editor.selection.range range
 
-    $input = $("<input id='#{@util.generateRandomId()}'></input>").attr(
+    $input = $("<input id='#{@util.generateRandomId()}' style='width: 40px' data-columns='5'></input>").attr(
       type: 'text'
     )
     range.insertNode $input[0]
@@ -96,10 +96,18 @@ class InputPopover extends Popover
         </tr>
         <tr>
           <td class="field-name">
+            <label>Columns:</label>
+          </td>
+          <td>
+            <input class="simditor-input-width" type="number" min="0" />
+          </td>
+        </tr>
+        <tr>
+          <td class="field-name">
             <label>Max length:</label>
           </td>
           <td>
-            <input class="simditor-input-maxlength" type="number" />
+            <input class="simditor-input-maxlength" type="number" min="0" />
           </td>
         </tr>
       </table>
@@ -109,6 +117,7 @@ class InputPopover extends Popover
       .append(tpl)
     @typeField = @.el.find '.simditor-input-type'
     @maxLengthField = @.el.find '.simditor-input-maxlength'
+    @widthField = @.el.find '.simditor-input-width'
     @_attachEvents()
 
   # read properties from the input to pre-load the popover data.
@@ -118,6 +127,7 @@ class InputPopover extends Popover
     # Load values from the rendered input
     @typeField.find('option[value="' + input.attr('type') + '"]').prop('selected', true)
     @maxLengthField.val(input.attr('maxlength') || '')
+    @widthField.val(input.attr('data-columns') || '5')
 
   _attachEvents: () ->
     @typeField.on 'change', () =>
@@ -130,6 +140,17 @@ class InputPopover extends Popover
         @target.removeAttr('maxlength')
       else
         @target.attr('maxlength', @.maxLengthField.val())
+    
+    @widthField.on 'blur', () =>
+      @target.val('')
+      if @widthField.val() == ''
+        # @target.style Agarrar lo que hay en style y pelarle el width que es el mio
+        @target.attr('style')
+      else
+        value = parseInt(@.widthField.val(), 10)
+        width = value * 8
+        @target.attr('data-columns', value)
+        @target.attr('style', "width: #{width}px")
 
   show: (args...) ->
     super args...
