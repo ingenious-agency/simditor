@@ -144,12 +144,12 @@ class InputPopover extends Popover
     @widthField.on 'blur', () =>
       @target.val('')
       if @widthField.val() == ''
-        @target.removeAttr('width')
+        # @target.style Agarrar lo que hay en style y pelarle el width que es el mio
+        @target.attr('style')
       else
-        # @target.style.width = "#{parseInt(@.widthField.val(), 10) * 10}px"
         value = parseInt(@.widthField.val(), 10)
         width = value * 8
-        @target.attr('data-width', value)
+        @target.attr('data-columns', value)
         @target.attr('style', "width: #{width}px")
 
   show: (args...) ->

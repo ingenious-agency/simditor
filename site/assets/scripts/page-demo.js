@@ -2,7 +2,7 @@
   $(function() {
     var $preview, allowedTags, editor, mobileToolbar, toolbar;
     Simditor.locale = 'en-US';
-    toolbar = ['fontScale', 'color', '|', 'bold', 'italic', 'underline', 'strikethrough', 'color', '|', 'ol', 'ul', 'blockquote', 'indent', 'outdent', 'alignment', '|', 'code', 'table', 'link', '|', 'input', 'select', 'checkbox', 'radio', 'textarea', '|', 'html'];
+    toolbar = ['fontScale', 'color', '|', 'bold', 'italic', 'underline', 'strikethrough', 'color', '|', 'ol', 'ul', 'blockquote', 'indent', 'outdent', 'alignment', '|', 'code', 'table', 'link', '|', 'input', 'select', 'checkbox', 'radio', 'textarea', '|'];
     allowedTags = ['br', 'span', 'a', 'img', 'b', 'strong', 'i', 'strike', 'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'h1', 'h2', 'h3', 'h4', 'hr', 'select', 'option', 'input', 'table', 'thead', 'tbody', 'tr', 'th', 'td'];
     mobileToolbar = ["bold", "underline", "strikethrough", "color", "ul", "ol"];
     if (mobilecheck()) {
