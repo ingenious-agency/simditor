@@ -483,7 +483,7 @@ Formatter = (function(superClass) {
       font: ['color'],
       code: ['class'],
       input: ['id', 'type', 'maxlength', 'placeholder', 'value', 'checked', 'name', 'style', 'data-columns'],
-      textarea: ['id', 'maxlength', 'rows', 'cols', 'data-columns'],
+      textarea: ['id', 'maxlength', 'rows', 'cols', 'data-columns', 'name'],
       select: ['id', 'name'],
       option: ['value', 'selected']
     }, this.opts.allowedAttributes);
@@ -5854,14 +5854,15 @@ InputButton = (function(superClass) {
   };
 
   InputButton.prototype.createInput = function() {
-    var $input, range;
+    var $input, id, range;
     if (!this.editor.inputManager.focused) {
       this.editor.focus();
     }
     range = this.editor.selection.range();
     range.deleteContents();
     this.editor.selection.range(range);
-    $input = $("<input id='" + (this.util.generateRandomId()) + "' style='width: 40px' data-columns='5'></input>").attr({
+    id = this.util.generateRandomId();
+    $input = $("<input id='" + id + "' name='" + id + "' style='width: 40px' data-columns='5'></input>").attr({
       type: 'text'
     });
     range.insertNode($input[0]);
@@ -6037,14 +6038,15 @@ TextareaButton = (function(superClass) {
   };
 
   TextareaButton.prototype.createTextarea = function() {
-    var $textarea, range;
+    var $textarea, id, range;
     if (!this.editor.inputManager.focused) {
       this.editor.focus();
     }
     range = this.editor.selection.range();
     range.deleteContents();
     this.editor.selection.range(range);
-    $textarea = $("<textarea id='" + (this.util.generateRandomId()) + "' cols='10' rows='2'></textarea>");
+    id = this.util.generateRandomId();
+    $textarea = $("<textarea id='" + id + "' name='" + id + "' cols='10' rows='2'></textarea>");
     range.insertNode($textarea[0]);
     this.editor.selection.setRangeAfter($textarea, range);
     this.editor.trigger('valuechanged');
@@ -6085,7 +6087,7 @@ TextareaPopover = (function(superClass) {
 
   TextareaPopover.prototype.render = function() {
     var tpl;
-    tpl = "<div class=\"popover-title\">\n  <span>Configure the textarea</span>\n</div>\n<div class=\"popover-content\">\n  <table class=\"popover-fields\">\n    <tr>\n      <td class=\"field-name\">Rows:</td>\n      <td>\n        <input class=\"simditor-textarea-rows\" type=\"number\" min=\"1\" />\n      </td>\n    </tr>\n    <tr>\n      <td class=\"field-name\">Columns:</td>\n      <td>\n        <input class=\"simditor-textarea-cols\" type=\"number\" min=\"1\" />\n      </td>\n    </tr>\n    <tr>\n      <td class=\"field-name\">Max length:</td>\n      <td>\n        <input class=\"simditor-textarea-maxlength\" type=\"number\" />\n      </td>\n    </tr>\n    \n  </table>\n</div>";
+    tpl = "<div class=\"popover-title\">\n  <span>Configure the textarea</span>\n</div>\n<div class=\"popover-content\">\n  <table class=\"popover-fields\">\n    <tr>\n      <td class=\"field-name\">Rows:</td>\n      <td>\n        <input class=\"simditor-textarea-rows\" type=\"number\" min=\"1\" />\n      </td>\n    </tr>\n    <tr>\n      <td class=\"field-name\">Columns:</td>\n      <td>\n        <input class=\"simditor-textarea-cols\" type=\"number\" min=\"1\" />\n      </td>\n    </tr>\n    <tr>\n      <td class=\"field-name\">Max length:</td>\n      <td>\n        <input class=\"simditor-textarea-maxlength\" type=\"number\" />\n      </td>\n    </tr>\n\n  </table>\n</div>";
     this.el.addClass('input-popover').append(tpl);
     this.rowsField = this.el.find('.simditor-textarea-rows');
     this.colsField = this.el.find('.simditor-textarea-cols');
@@ -6220,14 +6222,15 @@ CheckboxButton = (function(superClass) {
   };
 
   CheckboxButton.prototype.createInput = function() {
-    var $input, range;
+    var $input, id, range;
     if (!this.editor.inputManager.focused) {
       this.editor.focus();
     }
     range = this.editor.selection.range();
     range.deleteContents();
     this.editor.selection.range(range);
-    $input = $("<input id='" + (this.util.generateRandomId()) + "'/>").attr({
+    id = this.util.generateRandomId();
+    $input = $("<input id='" + id + "' name='" + id + "' />").attr({
       type: 'checkbox'
     });
     range.insertNode($input[0]);
@@ -6386,14 +6389,15 @@ RadioButton = (function(superClass) {
   };
 
   RadioButton.prototype.createInput = function() {
-    var $input, range;
+    var $input, id, range;
     if (!this.editor.inputManager.focused) {
       this.editor.focus();
     }
     range = this.editor.selection.range();
     range.deleteContents();
     this.editor.selection.range(range);
-    $input = $("<input id='" + (this.util.generateRandomId()) + "'/>").attr({
+    id = this.util.generateRandomId();
+    $input = $("<input id='" + id + "' name='" + id + "'/>").attr({
       type: 'radio'
     });
     range.insertNode($input[0]);
@@ -6562,14 +6566,15 @@ SelectButton = (function(superClass) {
   };
 
   SelectButton.prototype.createSelect = function() {
-    var $select, range;
+    var $select, id, range;
     if (!this.editor.inputManager.focused) {
       this.editor.focus();
     }
     range = this.editor.selection.range();
     range.deleteContents();
     this.editor.selection.range(range);
-    $select = $("<select id='" + (this.util.generateRandomId()) + "'></select>");
+    id = this.util.generateRandomId();
+    $select = $("<select id='" + id + "' name='" + id + "'></select>");
     range.insertNode($select[0]);
     this.editor.selection.setRangeAfter($select, range);
     this.editor.trigger('valuechanged');

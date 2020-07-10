@@ -51,8 +51,9 @@ class InputButton extends Button
     range = @editor.selection.range()
     range.deleteContents()
     @editor.selection.range range
+    id = @util.generateRandomId()
 
-    $input = $("<input id='#{@util.generateRandomId()}' style='width: 40px' data-columns='5'></input>").attr(
+    $input = $("<input id='#{id}' name='#{id}' style='width: 40px' data-columns='5'></input>").attr(
       type: 'text'
     )
     range.insertNode $input[0]
@@ -140,7 +141,7 @@ class InputPopover extends Popover
         @target.removeAttr('maxlength')
       else
         @target.attr('maxlength', @.maxLengthField.val())
-    
+
     @widthField.on 'blur', () =>
       @target.val('')
       if @widthField.val() == ''

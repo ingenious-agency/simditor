@@ -50,8 +50,9 @@ class CheckboxButton extends Button
     range = @editor.selection.range()
     range.deleteContents()
     @editor.selection.range range
+    id = @util.generateRandomId()
 
-    $input = $("<input id='#{@util.generateRandomId()}'/>").attr(
+    $input = $("<input id='#{id}' name='#{id}' />").attr(
       type: 'checkbox'
     )
     range.insertNode $input[0]

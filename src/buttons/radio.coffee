@@ -50,8 +50,8 @@ class RadioButton extends Button
     range = @editor.selection.range()
     range.deleteContents()
     @editor.selection.range range
-
-    $input = $("<input id='#{@util.generateRandomId()}'/>").attr(
+    id = @util.generateRandomId()
+    $input = $("<input id='#{id}' name='#{id}'/>").attr(
       type: 'radio'
     )
     range.insertNode $input[0]

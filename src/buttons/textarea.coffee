@@ -50,8 +50,8 @@ class TextareaButton extends Button
     range = @editor.selection.range()
     range.deleteContents()
     @editor.selection.range range
-
-    $textarea = $("<textarea id='#{@util.generateRandomId()}' cols='10' rows='2'></textarea>")
+    id = @util.generateRandomId()
+    $textarea = $("<textarea id='#{id}' name='#{id}' cols='10' rows='2'></textarea>")
     range.insertNode $textarea[0]
     @editor.selection.setRangeAfter $textarea, range
     @editor.trigger 'valuechanged'
@@ -98,7 +98,7 @@ class TextareaPopover extends Popover
             <input class="simditor-textarea-maxlength" type="number" />
           </td>
         </tr>
-        
+
       </table>
     </div>
     """
