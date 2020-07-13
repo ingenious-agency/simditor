@@ -51,7 +51,7 @@ class TextareaButton extends Button
     range.deleteContents()
     @editor.selection.range range
     id = @util.generateRandomId()
-    $textarea = $("<textarea id='#{id}' name='#{id}' cols='10' rows='2'></textarea>")
+    $textarea = $("<textarea id='#{id}' name='#{id}' cols='10' style='width: 96px' rows='2'></textarea>")
     range.insertNode $textarea[0]
     @editor.selection.setRangeAfter $textarea, range
     @editor.trigger 'valuechanged'
@@ -132,6 +132,9 @@ class TextareaPopover extends Popover
         @target.removeAttr('cols')
       else
         @target.attr('cols', @colsField.val())
+        value = parseInt(@.colsField.val(), 10)
+        width = 16 + value * 8
+        @target.attr('style', "width: #{width}px")
 
     @maxLengthField.on 'blur', () =>
       @target.val('')

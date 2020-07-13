@@ -483,7 +483,7 @@ Formatter = (function(superClass) {
       font: ['color'],
       code: ['class'],
       input: ['id', 'type', 'maxlength', 'placeholder', 'value', 'checked', 'name', 'style', 'data-columns'],
-      textarea: ['id', 'maxlength', 'rows', 'cols', 'data-columns', 'name'],
+      textarea: ['id', 'maxlength', 'rows', 'cols', 'name', 'style'],
       select: ['id', 'name'],
       option: ['value', 'selected']
     }, this.opts.allowedAttributes);
@@ -499,7 +499,8 @@ Formatter = (function(superClass) {
       h2: ['margin-left', 'text-align'],
       h3: ['margin-left', 'text-align'],
       h4: ['margin-left', 'text-align'],
-      input: ['width']
+      input: ['width'],
+      textarea: ['width']
     }, this.opts.allowedStyles);
     return this.editor.body.on('click', 'a', function(e) {
       return false;
@@ -5862,7 +5863,7 @@ InputButton = (function(superClass) {
     range.deleteContents();
     this.editor.selection.range(range);
     id = this.util.generateRandomId();
-    $input = $("<input id='" + id + "' name='" + id + "' style='width: 40px' data-columns='5'></input>").attr({
+    $input = $("<input id='" + id + "' name='" + id + "' style='width: 56px' data-columns='5'></input>").attr({
       type: 'text'
     });
     range.insertNode($input[0]);
@@ -5903,7 +5904,7 @@ InputPopover = (function(superClass) {
 
   InputPopover.prototype.render = function() {
     var tpl;
-    tpl = "<div class=\"popover-title\">\n  <span>Configure the input</span>\n</div>\n<div class=\"popover-content\">\n  <table class=\"popover-fields\">\n    <tr>\n      <td class=\"field-name\">\n        Type:\n      </td>\n      <td>\n        <select class=\"simditor-input-type\">\n          <option value=\"text\">Text</option>\n          <option value=\"number\">Number</option>\n          <option value=\"email\">Email</option>\n        </select>\n      </td>\n    </tr>\n    <tr>\n      <td class=\"field-name\">\n        <label>Columns:</label>\n      </td>\n      <td>\n        <input class=\"simditor-input-width\" type=\"number\" min=\"0\" />\n      </td>\n    </tr>\n    <tr>\n      <td class=\"field-name\">\n        <label>Max length:</label>\n      </td>\n      <td>\n        <input class=\"simditor-input-maxlength\" type=\"number\" min=\"0\" />\n      </td>\n    </tr>\n  </table>\n</div>";
+    tpl = "<div class=\"popover-title\">\n  <span>Configure the input</span>\n</div>\n<div class=\"popover-content\">\n  <table class=\"popover-fields\">\n    <tr>\n      <td class=\"field-name\">\n        Type:\n      </td>\n      <td>\n        <select class=\"simditor-input-type\">\n          <option value=\"text\">Text</option>\n          <option value=\"number\">Number</option>\n          <option value=\"email\">Email</option>\n        </select>\n      </td>\n    </tr>\n    <tr>\n      <td class=\"field-name\">\n        <label>Columns:</label>\n      </td>\n      <td>\n        <input class=\"simditor-input-width\" type=\"number\" min=\"1\" />\n      </td>\n    </tr>\n    <tr>\n      <td class=\"field-name\">\n        <label>Max length:</label>\n      </td>\n      <td>\n        <input class=\"simditor-input-maxlength\" type=\"number\" min=\"0\" />\n      </td>\n    </tr>\n  </table>\n</div>";
     this.el.addClass('input-popover').append(tpl);
     this.typeField = this.el.find('.simditor-input-type');
     this.maxLengthField = this.el.find('.simditor-input-maxlength');
@@ -5944,7 +5945,7 @@ InputPopover = (function(superClass) {
           return _this.target.attr('style');
         } else {
           value = parseInt(_this.widthField.val(), 10);
-          width = value * 8;
+          width = 16 + value * 8;
           _this.target.attr('data-columns', value);
           return _this.target.attr('style', "width: " + width + "px");
         }
@@ -6046,7 +6047,7 @@ TextareaButton = (function(superClass) {
     range.deleteContents();
     this.editor.selection.range(range);
     id = this.util.generateRandomId();
-    $textarea = $("<textarea id='" + id + "' name='" + id + "' cols='10' rows='2'></textarea>");
+    $textarea = $("<textarea id='" + id + "' name='" + id + "' cols='10' style='width: 96px' rows='2'></textarea>");
     range.insertNode($textarea[0]);
     this.editor.selection.setRangeAfter($textarea, range);
     this.editor.trigger('valuechanged');
@@ -6116,11 +6117,15 @@ TextareaPopover = (function(superClass) {
     })(this));
     this.colsField.on('blur', (function(_this) {
       return function() {
+        var value, width;
         _this.target.val('');
         if (_this.colsField.val() === '') {
           return _this.target.removeAttr('cols');
         } else {
-          return _this.target.attr('cols', _this.colsField.val());
+          _this.target.attr('cols', _this.colsField.val());
+          value = parseInt(_this.colsField.val(), 10);
+          width = 16 + value * 8;
+          return _this.target.attr('style', "width: " + width + "px");
         }
       };
     })(this));
