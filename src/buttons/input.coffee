@@ -100,7 +100,7 @@ class InputPopover extends Popover
             <label>Columns:</label>
           </td>
           <td>
-            <input class="simditor-input-width" type="number" min="0" />
+            <input class="simditor-input-width" type="number" min="1" />
           </td>
         </tr>
         <tr>
