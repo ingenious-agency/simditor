@@ -53,7 +53,7 @@ class InputButton extends Button
     @editor.selection.range range
     id = @util.generateRandomId()
 
-    $input = $("<input id='#{id}' name='#{id}' style='width: 40px' data-columns='5'></input>").attr(
+    $input = $("<input id='#{id}' name='#{id}' style='width: 56px' data-columns='5'></input>").attr(
       type: 'text'
     )
     range.insertNode $input[0]
@@ -149,7 +149,7 @@ class InputPopover extends Popover
         @target.attr('style')
       else
         value = parseInt(@.widthField.val(), 10)
-        width = value * 8
+        width = 16 + value * 8
         @target.attr('data-columns', value)
         @target.attr('style', "width: #{width}px")
 

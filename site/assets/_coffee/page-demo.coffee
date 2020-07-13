@@ -7,8 +7,7 @@ $ ->
     'bold', 'italic', 'underline', 'strikethrough', 'color', '|',
     'ol', 'ul', 'blockquote', 'indent', 'outdent', 'alignment', '|',
     'code', 'table', 'link', '|',
-    'input', 'select', 'checkbox', 'radio', 'textarea', '|',
-    'html'
+    'input', 'select', 'checkbox', 'radio', 'textarea'
   ]
 
   allowedTags= [

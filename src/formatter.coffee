@@ -24,7 +24,7 @@ class Formatter extends SimpleModule
       font: ['color']
       code: ['class']
       input: ['id', 'type', 'maxlength', 'placeholder', 'value', 'checked', 'name', 'style', 'data-columns']
-      textarea: ['id', 'maxlength', 'rows', 'cols', 'data-columns', 'name']
+      textarea: ['id', 'maxlength', 'rows', 'cols', 'name', 'style']
       select: ['id', 'name']
       option: ['value', 'selected']
     , @opts.allowedAttributes
@@ -42,6 +42,7 @@ class Formatter extends SimpleModule
       h3: ['margin-left', 'text-align']
       h4: ['margin-left', 'text-align']
       input: ['width']
+      textarea: ['width']
     , @opts.allowedStyles
 
     @editor.body.on 'click', 'a', (e) ->
