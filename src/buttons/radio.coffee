@@ -127,6 +127,7 @@ class RadioPopover extends Popover
 
     @checkedField.on 'change', =>
       @target.prop('checked', @checkedField.prop('checked'))
+      @target.attr('checked', @checkedField.prop('checked'))
 
     @valueField.on 'blur', =>
       if @valueField.val() == ''
