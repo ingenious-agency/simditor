@@ -27,6 +27,8 @@ class Formatter extends SimpleModule
       textarea: ['id', 'maxlength', 'rows', 'cols', 'name', 'style']
       select: ['id', 'name']
       option: ['value', 'selected']
+      radio: ['checked']
+      checkbox: ['checked']
     , @opts.allowedAttributes
 
     @_allowedStyles = $.extend

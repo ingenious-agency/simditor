@@ -485,7 +485,9 @@ Formatter = (function(superClass) {
       input: ['id', 'type', 'maxlength', 'placeholder', 'value', 'checked', 'name', 'style', 'data-columns'],
       textarea: ['id', 'maxlength', 'rows', 'cols', 'name', 'style'],
       select: ['id', 'name'],
-      option: ['value', 'selected']
+      option: ['value', 'selected'],
+      radio: ['checked'],
+      checkbox: ['checked']
     }, this.opts.allowedAttributes);
     this._allowedStyles = $.extend({
       span: ['color', 'font-size'],
@@ -6293,7 +6295,8 @@ CheckboxPopover = (function(superClass) {
   CheckboxPopover.prototype._attachEvents = function() {
     this.checkedField.on('change', (function(_this) {
       return function() {
-        return _this.target.prop('checked', _this.checkedField.prop('checked'));
+        _this.target.prop('checked', _this.checkedField.prop('checked'));
+        return _this.target.attr('checked', _this.checkedField.prop('checked'));
       };
     })(this));
     return this.valueField.on('blur', (function(_this) {
@@ -6473,7 +6476,8 @@ RadioPopover = (function(superClass) {
     })(this));
     this.checkedField.on('change', (function(_this) {
       return function() {
-        return _this.target.prop('checked', _this.checkedField.prop('checked'));
+        _this.target.prop('checked', _this.checkedField.prop('checked'));
+        return _this.target.attr('checked', _this.checkedField.prop('checked'));
       };
     })(this));
     return this.valueField.on('blur', (function(_this) {

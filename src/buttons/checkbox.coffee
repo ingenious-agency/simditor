@@ -113,6 +113,7 @@ class CheckboxPopover extends Popover
   _attachEvents: () ->
     @checkedField.on 'change', =>
       @target.prop('checked', @checkedField.prop('checked'))
+      @target.attr('checked', @checkedField.prop('checked'))
 
     @valueField.on 'blur', =>
       @target.val('')
