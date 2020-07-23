@@ -1057,10 +1057,11 @@ HtmlInputManager = (function(superClass) {
     this._generateMissingIds();
     return this.editor.body.find('input, textarea, select').each((function(_this) {
       return function(i, elem) {
-        var id, type;
+        var id, type, value;
         id = $(elem).attr('id');
         type = _this._getElementType(elem);
-        return _this._addInput(id, type);
+        value = $(elem).attr('value');
+        return _this._addInput(id, type, value);
       };
     })(this));
   };
@@ -1068,7 +1069,8 @@ HtmlInputManager = (function(superClass) {
   HtmlInputManager.prototype._addInput = function(id, type, value) {
     return this._inputs.push({
       id: id,
-      type: type
+      type: type,
+      value: value
     });
   };
 
@@ -6405,7 +6407,7 @@ RadioButton = (function(superClass) {
     range.deleteContents();
     this.editor.selection.range(range);
     id = this.util.generateRandomId();
-    $input = $("<input id='" + id + "' name='" + id + "'/>").attr({
+    $input = $("<input id='" + id + "' name='" + id + "' value='" + id + "'/>").attr({
       type: 'radio'
     });
     range.insertNode($input[0]);
