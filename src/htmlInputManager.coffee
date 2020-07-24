@@ -22,12 +22,14 @@ class HtmlInputManager extends SimpleModule
     @editor.body.find('input, textarea, select').each (i, elem) =>
       id = $(elem).attr('id')
       type = @_getElementType(elem)
-      @_addInput(id, type)
+      value = $(elem).attr('value')
+      @_addInput(id, type, value)
 
   _addInput: (id, type, value) ->
     @_inputs.push(
       id: id
       type: type
+      value: value
     )
 
   _getElementType: (elem) ->
