@@ -14,7 +14,7 @@ class Formatter extends SimpleModule
     @_allowedTags = $.merge(
       ['br', 'span', 'a', 'img', 'b', 'strong', 'i', 'strike',
       'u', 'font', 'p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'h1',
-      'h2', 'h3', 'h4', 'hr'],
+      'h2', 'h3', 'h4', 'hr', 'select', 'option', 'input', 'textarea'],
       @opts.allowedTags
     )
 
@@ -23,6 +23,12 @@ class Formatter extends SimpleModule
       a: ['href', 'target']
       font: ['color']
       code: ['class']
+      input: ['id', 'type', 'maxlength', 'placeholder', 'value', 'checked', 'name', 'style', 'data-columns']
+      textarea: ['id', 'maxlength', 'rows', 'cols', 'name', 'style']
+      select: ['id', 'name']
+      option: ['value', 'selected']
+      radio: ['checked']
+      checkbox: ['checked']
     , @opts.allowedAttributes
 
     @_allowedStyles = $.extend
@@ -37,6 +43,8 @@ class Formatter extends SimpleModule
       h2: ['margin-left', 'text-align']
       h3: ['margin-left', 'text-align']
       h4: ['margin-left', 'text-align']
+      input: ['width']
+      textarea: ['width']
     , @opts.allowedStyles
 
     @editor.body.on 'click', 'a', (e) ->

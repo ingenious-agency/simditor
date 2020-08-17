@@ -14,6 +14,7 @@ module.exports = (grunt) ->
             'src/selection.coffee'
             'src/formatter.coffee'
             'src/inputManager.coffee'
+            'src/htmlInputManager.coffee'
             'src/keystroke.coffee'
             'src/undoManager.coffee'
             'src/util.coffee'
@@ -41,6 +42,11 @@ module.exports = (grunt) ->
             'src/buttons/table.coffee'
             'src/buttons/strikethrough.coffee'
             'src/buttons/alignment.coffee'
+            'src/buttons/input.coffee'
+            'src/buttons/textarea.coffee'
+            'src/buttons/checkbox.coffee'
+            'src/buttons/radio.coffee'
+            'src/buttons/select.coffee'
           ]
       site:
         expand: true

@@ -16,7 +16,7 @@ class TableButton extends Button
 
     $.merge(
       @editor.formatter._allowedTags,
-      ['thead', 'th', 'tbody', 'tr', 'td', 'colgroup', 'col']
+      ['thead', 'th', 'tbody', 'tr', 'td', 'colgroup', 'col', 'select', 'option', 'input']
     )
 
     $.extend @editor.formatter._allowedAttributes,

@@ -2,6 +2,7 @@
 class Simditor extends SimpleModule
   @connect Util
   @connect InputManager
+  @connect HtmlInputManager
   @connect Selection
   @connect UndoManager
   @connect Keystroke
@@ -199,3 +200,6 @@ class Simditor extends SimpleModule
     $(document).off '.simditor-' + @id
     $(window).off '.simditor-' + @id
     @off()
+
+  getHtmlInputs: ->
+    @htmlInputManager._inputs
